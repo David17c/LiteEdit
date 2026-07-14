@@ -13,3 +13,5 @@ A very basic gui text editor written in python.
 | CTRL + a | Select all |
 | CTRL + c | Copy selected |
 | CTRL + v | Paste |
+
+LiteEdit actively being developed and not currently meant to be used contributions are welcome
