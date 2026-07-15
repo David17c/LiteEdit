@@ -1,6 +1,6 @@
 # LiteEdit
 
-A basic gui text editor written in python.
+Simeple text-editor written in Python
 
 | Keybind  | Action        
 |----------|---------------
@@ -14,5 +14,4 @@ A basic gui text editor written in python.
 | CTRL + c | Copy selected 
 | CTRL + v | Paste         
 
-LiteEdit is actively being developed and not yet ready for "real" use. Contributions are welcome.
-
+<a href="https://www.flaticon.com/free-icons/paper" title="paper icons">Paper icons created by Ian Anandara - Flaticon</a>
