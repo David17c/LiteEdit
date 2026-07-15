@@ -95,8 +95,13 @@ def open_file(event=None):
     global current_file_path
 
     if textbox.edit_modified():
-        if messagebox.askyesno("Confirmation", "Do you want to save before continuing?"):
+        result = messagebox.askyesnocancel("Confirmation", "Do you want to save before continuing?")
+
+        if result is True:
             save_file()
+
+        elif result is None:
+            return 
 
     file_path = filedialog.askopenfilename(
         title="Open File",
@@ -142,13 +147,17 @@ def save_file(event=None):
     textbox.edit_modified(False)
     update_title()
 
-
 def new_file(event=None):
     global current_file_path
 
     if textbox.edit_modified():
-        if messagebox.askyesno("Confirmation", "Do you want to save before continuing?"):
+        result = messagebox.askyesnocancel("Confirmation", "Do you want to save before continuing?")
+
+        if result is True:
             save_file()
+
+        elif result is None:
+            return 
 
     current_file_path = ""
 
@@ -180,10 +189,21 @@ def redo(event=None):
 
 def on_closing(event=None):
     if textbox.edit_modified():
-        if messagebox.askyesno("Confirmation", "Do you want to save before continuing?"):
-            save_file()
+        result = messagebox.askyesnocancel(
+            "Confirmation",
+            "Do you want to save before closing?"
+        )
 
-    root.destroy()
+        if result is True:
+            save_file()
+            root.destroy()
+        elif result is False:
+            root.destroy()
+        else:
+            return
+
+    else:
+        root.destroy()
 
 
 def on_modified(event=None):
