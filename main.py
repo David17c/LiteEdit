@@ -8,6 +8,18 @@ current_file_path = ""
 textbox = None
 root = tk.Tk()
 
+TEXTBOX_BACKGROUND_COLOR = "#1E222A"  
+FRAME_BACKGROUND_COLOR = "#161A21"
+
+TEXTBOX_FOREGROUND_COLOR = "#ECEFF4"
+TEXTBOX_TEXTSELECT_FOREGROUND_COLOR = "#FFFFFF"
+
+TEXTBOX_TEXTSELECT_BACKGROUND_COLOR = "#5E81AC"
+
+BUTTON_BACKGROUND_COLOR = "#2E3440"
+BUTTON_FOREGROUND_COLOR = "#ECEFF4"
+BUTTON_ACTIVE_BACKGROUND_COLOR = "#434C5E"
+BUTTON_ACTIVE_FOREGROUND_COLOR = "#FFFFFF"
 
 def update_title():
     prefix = "*" if textbox.edit_modified() else ""
@@ -30,14 +42,23 @@ def main():
 
     root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
-    top_frame = tk.Frame(root, height=40)
+    top_frame = tk.Frame(root, height=40, bg=FRAME_BACKGROUND_COLOR)
     top_frame.pack(fill="x")
 
-    tk.Button(top_frame, text="Open", command=open_file).pack(side="left", padx=10, pady=10)
-    tk.Button(top_frame, text="Save", command=save_file).pack(side="left", padx=10, pady=10)
-    tk.Button(top_frame, text="New", command=new_file).pack(side="left", padx=10, pady=10)
+    create_button(top_frame, "Open", open_file).pack(side="left")
+    create_button(top_frame, "Save", save_file).pack(side="left")
+    create_button(top_frame, "New", new_file).pack(side="left")
 
-    textbox = tk.Text(root, wrap="word", undo=True, font=("Arial", 15))
+    textbox = tk.Text(root, 
+    wrap="word", 
+    bg=TEXTBOX_BACKGROUND_COLOR, 
+    fg=TEXTBOX_FOREGROUND_COLOR, 
+    selectbackground=TEXTBOX_TEXTSELECT_BACKGROUND_COLOR,
+    selectforeground=TEXTBOX_TEXTSELECT_FOREGROUND_COLOR,
+    undo=True, 
+    font=("JetBrains Mono", 13)
+    )
+
     textbox.pack(fill="both", expand=True)
     textbox.focus_set()
 
@@ -54,6 +75,17 @@ def main():
     root.protocol("WM_DELETE_WINDOW", on_closing)
 
     root.mainloop()
+
+def create_button(parent, text, command):
+    return tk.Button(
+        parent,
+        text=text,
+        command=command,
+        bg=BUTTON_BACKGROUND_COLOR,
+        fg=BUTTON_FOREGROUND_COLOR,
+        activebackground=BUTTON_ACTIVE_BACKGROUND_COLOR,
+        activeforeground=BUTTON_ACTIVE_FOREGROUND_COLOR
+    )
 
 
 def open_file(event=None):

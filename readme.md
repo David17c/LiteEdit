@@ -1,6 +1,6 @@
 # LiteEdit
 
-A very basic gui text editor written in python.
+A basic gui text editor written in python.
 
 | Keybind | Action |
 |--------------|--------|
@@ -14,4 +14,5 @@ A very basic gui text editor written in python.
 | CTRL + c | Copy selected |
 | CTRL + v | Paste |
 
-LiteEdit actively being developed and not currently meant to be used contributions are welcome
+LiteEdit is actively being developed and not yet ready for "real" use. Contributions are welcome.
+
