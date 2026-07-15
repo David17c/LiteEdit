@@ -58,7 +58,7 @@ def main():
     selectforeground=TEXTBOX_TEXTSELECT_FOREGROUND_COLOR,
     insertbackground=TEXTBOX_CURSOR_COLOR,
     undo=True, 
-    font=("JetBrains Mono", 13)
+    font=("TkDefaultFont", 13)
     )
 
     textbox.pack(fill="both", expand=True)
