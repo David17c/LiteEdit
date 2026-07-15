@@ -8,13 +8,13 @@ current_file_path = ""
 textbox = None
 root = tk.Tk()
 
-TEXTBOX_BACKGROUND_COLOR = "#1E222A"  
 FRAME_BACKGROUND_COLOR = "#161A21"
 
+TEXTBOX_BACKGROUND_COLOR = "#1E222A"  
 TEXTBOX_FOREGROUND_COLOR = "#ECEFF4"
 TEXTBOX_TEXTSELECT_FOREGROUND_COLOR = "#FFFFFF"
-
 TEXTBOX_TEXTSELECT_BACKGROUND_COLOR = "#5E81AC"
+TEXTBOX_CURSOR_COLOR = "#88C0D0"
 
 BUTTON_BACKGROUND_COLOR = "#2E3440"
 BUTTON_FOREGROUND_COLOR = "#ECEFF4"
@@ -30,6 +30,8 @@ def main():
     global textbox
 
     root.title(PROGRAM_NAME)
+    icon = tk.PhotoImage(file="image/liteedit_icon.png")
+    root.iconphoto(True, icon)
 
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
@@ -55,6 +57,7 @@ def main():
     fg=TEXTBOX_FOREGROUND_COLOR, 
     selectbackground=TEXTBOX_TEXTSELECT_BACKGROUND_COLOR,
     selectforeground=TEXTBOX_TEXTSELECT_FOREGROUND_COLOR,
+    insertbackground=TEXTBOX_CURSOR_COLOR,
     undo=True, 
     font=("JetBrains Mono", 13)
     )
