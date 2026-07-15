@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
-import sys
 
 PROGRAM_NAME = "LiteEdit"
 
@@ -67,6 +66,7 @@ def main():
 
     textbox.bind("<Control-s>", save_file) # save
     textbox.bind("<Control-a>", select_all_text) # select all text
+    textbox.bind("<Control-l>", select_current_line) # select all text in the line the cursor is currently on
     textbox.bind("<Control-o>", open_file) # open file
     textbox.bind("<Control-n>", new_file) # create new file
     textbox.bind("<Control-q>", on_closing) # close program
@@ -89,7 +89,6 @@ def create_button(parent, text, command):
         activebackground=BUTTON_ACTIVE_BACKGROUND_COLOR,
         activeforeground=BUTTON_ACTIVE_FOREGROUND_COLOR
     )
-
 
 def open_file(event=None):
     global current_file_path
@@ -170,6 +169,11 @@ def new_file(event=None):
 
 def select_all_text(event=None):
     textbox.tag_add("sel", "1.0", "end-1c")
+    return "break"
+
+def select_current_line(event=None):
+    textbox.tag_remove("sel", "1.0", "end")
+    textbox.tag_add("sel", "insert linestart", "insert lineend")
     return "break"
 
 def undo(event=None):
