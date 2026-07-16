@@ -1,5 +1,7 @@
 # LiteEdit
 
+![LiteEdit icon](image/icon.png)
+
 Lightweight text-editor written in Python
 
 | Keybind  | Action              

@@ -29,7 +29,7 @@ def main():
     global textbox
 
     root.title(PROGRAM_NAME)
-    icon = tk.PhotoImage(file="image/liteedit_icon.png")
+    icon = tk.PhotoImage(file="image/icon.png")
     root.iconphoto(True, icon)
 
     screen_width = root.winfo_screenwidth()
