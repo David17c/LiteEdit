@@ -7,17 +7,17 @@ current_file_path = ""
 textbox = None
 root = tk.Tk()
 
-FRAME_BACKGROUND_COLOR = "#161A21"
+FRAME_BACKGROUND_COLOR = "#242933"
 
-TEXTBOX_BACKGROUND_COLOR = "#1E222A"  
-TEXTBOX_FOREGROUND_COLOR = "#ECEFF4"
+TEXTBOX_BACKGROUND_COLOR = "#1B1F27"
+TEXTBOX_FOREGROUND_COLOR = "#F8FAFC"
 TEXTBOX_TEXTSELECT_FOREGROUND_COLOR = "#FFFFFF"
 TEXTBOX_TEXTSELECT_BACKGROUND_COLOR = "#5E81AC"
-TEXTBOX_CURSOR_COLOR = "#88C0D0"
+TEXTBOX_CURSOR_COLOR = "#A3BE8C"
 
-MENU_BACKGROUND_COLOR = "#1E222A"
-MENU_FOREGROUND_COLOR = "#ECEFF4"
-MENU_ACTIVE_BACKGROUND_COLOR = "#5E81AC"
+MENU_BACKGROUND_COLOR = "#1B1F27"
+MENU_FOREGROUND_COLOR = "#F8FAFC"
+MENU_ACTIVE_BACKGROUND_COLOR = "#81A1C1"
 MENU_ACTIVE_FOREGROUND_COLOR = "#FFFFFF"
 
 def update_title():
@@ -63,7 +63,7 @@ def main():
     )
 
     file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+N")
-    file_menu.add_command(label="Open...", command=open_file, accelerator="Ctrl+O")
+    file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
     file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
     file_menu.add_separator()
     file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+Q")
@@ -82,6 +82,10 @@ def main():
     edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+Z")
     edit_menu.add_command(label="Redo", command=redo, accelerator="Ctrl+Y")
     edit_menu.add_separator()
+    edit_menu.add_command(label="Cut", command=lambda: textbox.event_generate("<<Cut>>"), accelerator="Ctrl+X")
+    edit_menu.add_command(label="Copy", command=lambda: textbox.event_generate("<<Copy>>"), accelerator="Ctrl+C")
+    edit_menu.add_command(label="Paste", command=lambda: textbox.event_generate("<<Paste>>"), accelerator="Ctrl+V")
+    edit_menu.add_separator()
     edit_menu.add_command(label="Select All", command=select_all_text, accelerator="Ctrl+A")
     edit_menu.add_command(label="Select Current Line", command=select_current_line, accelerator="Ctrl+L")
 
@@ -89,7 +93,7 @@ def main():
 
     textbox = tk.Text(
         root,
-        wrap="word",
+        wrap="none",
         bg=TEXTBOX_BACKGROUND_COLOR,
         fg=TEXTBOX_FOREGROUND_COLOR,
         selectbackground=TEXTBOX_TEXTSELECT_BACKGROUND_COLOR,
@@ -214,7 +218,7 @@ def redo(event=None):
     try:
         textbox.edit_redo()
     except tk.TclError:
-        pass  # Nothing to redo
+        pass
     return "break"
 
 
