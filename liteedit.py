@@ -1,14 +1,15 @@
 import sys
 import os
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, font
 from pathlib import Path
 
 PROGRAM_NAME = "LiteEdit"
 
 current_file_path = ""
-textbox = None
 root = tk.Tk()
+textbox = None
+textbox_font = font.Font(family="TkDefaultFont", size=13)
 
 startup_file = ""
 
@@ -91,7 +92,20 @@ def main():
 
     menubar.add_cascade(label="Edit", menu=edit_menu)
 
-    textbox = tk.Text(root, wrap="none", undo=True, font=("TkDefaultFont", 13))
+    view_menu = tk.Menu(menubar, tearoff=0)
+
+    view_menu.add_command(
+        label="Zoom in", command=lambda: zoom("in"), accelerator="Ctrl+Up"
+    )
+    view_menu.add_command(
+        label="Zoom out", command=lambda: zoom("out"), accelerator="Ctrl+Down  "
+    )
+    view_menu.add_command(
+        label="font", command=change_font, accelerator="Ctrl+Shift+T  "
+    )
+
+    menubar.add_cascade(label="View", menu=view_menu)
+    textbox = tk.Text(root, wrap="none", undo=True, font=textbox_font)
 
     textbox.pack(fill="both", expand=True)
     textbox.focus_set()
@@ -108,6 +122,10 @@ def main():
     textbox.bind("<Control-q>", on_closing)
     textbox.bind("<Control-z>", undo)
     textbox.bind("<Control-y>", redo)
+    textbox.bind("<Control-equal>", lambda event: zoom("in"))
+    textbox.bind("<Control-Up>", lambda event: zoom("in"))
+    textbox.bind("<Control-Down>", lambda event: zoom("out"))
+    textbox.bind("<Control-Shift-T>", change_font)
 
     textbox.bind("<<Modified>>", on_modified)
 
@@ -145,8 +163,11 @@ def open_file(event=None):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             content = file.read()
-    except:
-        messagebox.showerror("ERROR", "Unable to open file")
+    except UnicodeDecodeError:
+        messagebox.showerror("ERROR", "File is not a valid UTF-8 text file.")
+        return
+    except OSError as err:
+        messagebox.showerror("ERROR", "Unable to open file. {err}")
         return
 
     textbox.delete("1.0", "end")
@@ -271,6 +292,39 @@ def on_closing(event=None):
 
 def on_modified(event=None):
     update_title()
+
+
+def zoom(action, event=None):
+    global textbox_font
+
+    current_size = textbox_font.cget("size")
+    if action == "in":
+        if current_size < 250:
+            textbox_font.configure(size=current_size + 1)
+    elif action == "out":
+        if current_size > 1:
+            textbox_font.configure(size=current_size - 1)
+
+
+def change_font(event=None):
+    global textbox_font
+    global root
+
+    root.tk.call(
+        "tk",
+        "fontchooser",
+        "configure",
+        "-font",
+        textbox_font,
+        "-command",
+        root.register(font_changed),
+    )
+    root.tk.call("tk", "fontchooser", "show")
+
+
+def font_changed(font_desc):
+    actual = font.Font(font=font_desc).actual()
+    textbox_font.configure(**actual)
 
 
 if __name__ == "__main__":

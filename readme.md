@@ -6,7 +6,7 @@ Lightweight text-editor written in Python
 |----------|---------------------
 | CTRL + o | Open file           
 | CTRL + s | Save file           
-| CTRL + Shift + s | Save as
+| CTRL + Shift + S | Save as
 | CTRL + n | New file            
 | CTRL + q | Quit                
 | CTRL + z | Undo                
@@ -15,6 +15,9 @@ Lightweight text-editor written in Python
 | CTRL + l | select current line 
 | CTRL + c | Copy selected       
 | CTRL + v | Paste               
+| CTRL + Up | Zoom in            
+| CTRL + Down | Zoom out
+| CTRL + Shift + T | Change font
 
 LiteEdit accepts the following commandline arguments:
 
