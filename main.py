@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
+from pathlib import Path
 import sys
 import os
 
@@ -8,8 +9,6 @@ PROGRAM_NAME = "LiteEdit"
 current_file_path = ""
 textbox = None
 root = tk.Tk()
-
-FRAME_BACKGROUND_COLOR = "#242933"
 
 TEXTBOX_BACKGROUND_COLOR = "#1B1F27"
 TEXTBOX_FOREGROUND_COLOR = "#F8FAFC"
@@ -37,7 +36,11 @@ def main():
     global textbox
 
     root.title(PROGRAM_NAME)
-    icon = tk.PhotoImage(file="image/icon.png")
+
+    script_dir = Path(__file__).parent
+    icon_path = script_dir / "image" / "icon.png"
+
+    icon = tk.PhotoImage(file=icon_path)
     root.iconphoto(True, icon)
 
     screen_width = root.winfo_screenwidth()
