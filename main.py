@@ -72,7 +72,9 @@ def main():
 
     file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+N")
     file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
+    file_menu.add_separator()
     file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
+    file_menu.add_command(label="Save as", command=save_file, accelerator="Ctrl+Shift+S  ")
     file_menu.add_separator()
     file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+Q")
 
@@ -87,7 +89,7 @@ def main():
         activeforeground=MENU_ACTIVE_FOREGROUND_COLOR
     )
 
-    edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+Z")
+    edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+Z  ")
     edit_menu.add_command(label="Redo", command=redo, accelerator="Ctrl+Y")
     edit_menu.add_separator()
     edit_menu.add_command(label="Cut", command=lambda: textbox.event_generate("<<Cut>>"), accelerator="Ctrl+X")
@@ -118,6 +120,7 @@ def main():
         root.after(0, open_file)
 
     textbox.bind("<Control-s>", save_file)
+    textbox.bind("<Control-Shift-S>", save_as_file)
     textbox.bind("<Control-a>", select_all_text)
     textbox.bind("<Control-l>", select_current_line)
     textbox.bind("<Control-o>", open_file)
@@ -194,6 +197,27 @@ def save_file(event=None):
     with open(current_file_path, "w", encoding="utf-8") as file:
         file.write(content)
 
+    textbox.edit_modified(False)
+    update_title()
+
+def save_as_file(event=None):
+    global current_file_path
+
+    new_file_path = filedialog.asksaveasfilename(
+        title="Save As",
+        defaultextension=".txt",
+        filetypes=[("All files", "*.*")]
+    )
+
+    if not new_file_path:
+        return
+
+    content = textbox.get("1.0", "end-1c")
+
+    with open(new_file_path, "w", encoding="utf-8") as file:
+        file.write(content)
+
+    current_file_path = new_file_path
     textbox.edit_modified(False)
     update_title()
 

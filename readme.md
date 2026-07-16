@@ -6,6 +6,7 @@ Lightweight text-editor written in Python
 |----------|---------------------
 | CTRL + o | Open file           
 | CTRL + s | Save file           
+| CTRL + Shift + s | Save as
 | CTRL + n | New file            
 | CTRL + q | Quit                
 | CTRL + z | Undo                
