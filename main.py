@@ -1,8 +1,8 @@
+import sys
+import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from pathlib import Path
-import sys
-import os
 
 PROGRAM_NAME = "LiteEdit"
 
@@ -14,6 +14,7 @@ startup_file = ""
 
 if len(sys.argv) > 1:
     startup_file = sys.argv[1]
+
 
 def update_title():
     prefix = "*" if textbox.edit_modified() else ""
@@ -43,50 +44,54 @@ def main():
 
     root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
-    menubar = tk.Menu(
-        root,
-        tearoff=0
-    )
+    menubar = tk.Menu(root, tearoff=0)
     root.config(menu=menubar)
 
-    file_menu = tk.Menu(
-        menubar,
-        tearoff=0
-    )
+    file_menu = tk.Menu(menubar, tearoff=0)
 
     file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+N")
     file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
     file_menu.add_separator()
     file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
-    file_menu.add_command(label="Save as", command=save_file, accelerator="Ctrl+Shift+S  ")
+    file_menu.add_command(
+        label="Save as", command=save_file, accelerator="Ctrl+Shift+S  "
+    )
     file_menu.add_separator()
     file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+Q")
 
     menubar.add_cascade(label="File", menu=file_menu)
 
-    edit_menu = tk.Menu(
-        menubar,
-        tearoff=0
-    )
+    edit_menu = tk.Menu(menubar, tearoff=0)
 
     edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+Z  ")
     edit_menu.add_command(label="Redo", command=redo, accelerator="Ctrl+Y")
     edit_menu.add_separator()
-    edit_menu.add_command(label="Cut", command=lambda: textbox.event_generate("<<Cut>>"), accelerator="Ctrl+X")
-    edit_menu.add_command(label="Copy", command=lambda: textbox.event_generate("<<Copy>>"), accelerator="Ctrl+C")
-    edit_menu.add_command(label="Paste", command=lambda: textbox.event_generate("<<Paste>>"), accelerator="Ctrl+V")
+    edit_menu.add_command(
+        label="Cut",
+        command=lambda: textbox.event_generate("<<Cut>>"),
+        accelerator="Ctrl+X",
+    )
+    edit_menu.add_command(
+        label="Copy",
+        command=lambda: textbox.event_generate("<<Copy>>"),
+        accelerator="Ctrl+C",
+    )
+    edit_menu.add_command(
+        label="Paste",
+        command=lambda: textbox.event_generate("<<Paste>>"),
+        accelerator="Ctrl+V",
+    )
     edit_menu.add_separator()
-    edit_menu.add_command(label="Select All", command=select_all_text, accelerator="Ctrl+A")
-    edit_menu.add_command(label="Select Current Line", command=select_current_line, accelerator="Ctrl+L")
+    edit_menu.add_command(
+        label="Select All", command=select_all_text, accelerator="Ctrl+A"
+    )
+    edit_menu.add_command(
+        label="Select Current Line", command=select_current_line, accelerator="Ctrl+L"
+    )
 
     menubar.add_cascade(label="Edit", menu=edit_menu)
 
-    textbox = tk.Text(
-        root,
-        wrap="none",
-        undo=True,
-        font=("TkDefaultFont", 13)
-    )
+    textbox = tk.Text(root, wrap="none", undo=True, font=("TkDefaultFont", 13))
 
     textbox.pack(fill="both", expand=True)
     textbox.focus_set()
@@ -110,26 +115,28 @@ def main():
 
     root.mainloop()
 
+
 def open_file(event=None):
     global current_file_path
     global startup_file
 
     if textbox.edit_modified():
-        result = messagebox.askyesnocancel("Confirmation", "Do you want to save before continuing?")
+        result = messagebox.askyesnocancel(
+            "Confirmation", "Do you want to save before continuing?"
+        )
 
         if result is True:
             save_file()
 
         elif result is None:
-            return 
+            return
 
     if startup_file != "":
         file_path = startup_file
         startup_file = ""
-    else:    
+    else:
         file_path = filedialog.askopenfilename(
-            title="Open File",
-            filetypes=[("All files", "*.*")]
+            title="Open File", filetypes=[("All files", "*.*")]
         )
 
     if not file_path:
@@ -139,7 +146,7 @@ def open_file(event=None):
         with open(file_path, "r", encoding="utf-8") as file:
             content = file.read()
     except:
-        messagebox.showerror("ERROR", f"Unable to open file")
+        messagebox.showerror("ERROR", "Unable to open file")
         return
 
     textbox.delete("1.0", "end")
@@ -159,9 +166,7 @@ def save_file(event=None):
 
     if not current_file_path:
         current_file_path = filedialog.asksaveasfilename(
-            title="Save File",
-            defaultextension=".txt",
-            filetypes=[("All files", "*.*")]
+            title="Save File", defaultextension=".txt", filetypes=[("All files", "*.*")]
         )
 
         if not current_file_path:
@@ -175,13 +180,12 @@ def save_file(event=None):
     textbox.edit_modified(False)
     update_title()
 
+
 def save_as_file(event=None):
     global current_file_path
 
     new_file_path = filedialog.asksaveasfilename(
-        title="Save As",
-        defaultextension=".txt",
-        filetypes=[("All files", "*.*")]
+        title="Save As", defaultextension=".txt", filetypes=[("All files", "*.*")]
     )
 
     if not new_file_path:
@@ -196,17 +200,20 @@ def save_as_file(event=None):
     textbox.edit_modified(False)
     update_title()
 
+
 def new_file(event=None):
     global current_file_path
 
     if textbox.edit_modified():
-        result = messagebox.askyesnocancel("Confirmation", "Do you want to save before continuing?")
+        result = messagebox.askyesnocancel(
+            "Confirmation", "Do you want to save before continuing?"
+        )
 
         if result is True:
             save_file()
 
         elif result is None:
-            return 
+            return
 
     current_file_path = ""
 
@@ -221,10 +228,12 @@ def select_all_text(event=None):
     textbox.tag_add("sel", "1.0", "end-1c")
     return "break"
 
+
 def select_current_line(event=None):
     textbox.tag_remove("sel", "1.0", "end")
     textbox.tag_add("sel", "insert linestart", "insert lineend")
     return "break"
+
 
 def undo(event=None):
     try:
@@ -232,6 +241,7 @@ def undo(event=None):
     except tk.TclError:
         pass  # Nothing to undo
     return "break"
+
 
 def redo(event=None):
     try:
@@ -244,8 +254,7 @@ def redo(event=None):
 def on_closing(event=None):
     if textbox.edit_modified():
         result = messagebox.askyesnocancel(
-            "Confirmation",
-            "Do you want to save before closing?"
+            "Confirmation", "Do you want to save before closing?"
         )
 
         if result is True:
