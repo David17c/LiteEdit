@@ -17,11 +17,13 @@ if len(sys.argv) > 1:
     startup_file = sys.argv[1]
 
 
+# Update the title of the window based on save status
 def update_title():
     prefix = "*" if textbox.edit_modified() else ""
     root.title(f"{prefix}{current_file_path or PROGRAM_NAME}")
 
 
+# Program starts here
 def main():
     global startup_file
     global textbox
@@ -134,6 +136,7 @@ def main():
     root.mainloop()
 
 
+# Open a new file
 def open_file(event=None):
     global current_file_path
     global startup_file
@@ -167,7 +170,7 @@ def open_file(event=None):
         messagebox.showerror("ERROR", "File is not a valid UTF-8 text file.")
         return
     except OSError as err:
-        messagebox.showerror("ERROR", "Unable to open file. {err}")
+        messagebox.showerror("ERROR", f"Unable to open file. {err}")
         return
 
     textbox.delete("1.0", "end")
@@ -179,6 +182,7 @@ def open_file(event=None):
     update_title()
 
 
+# Save the current file
 def save_file(event=None):
     global current_file_path
 
@@ -202,6 +206,7 @@ def save_file(event=None):
     update_title()
 
 
+# Saves the current file as a new file
 def save_as_file(event=None):
     global current_file_path
 
@@ -222,6 +227,7 @@ def save_as_file(event=None):
     update_title()
 
 
+# Creates a new empty document
 def new_file(event=None):
     global current_file_path
 
@@ -245,17 +251,20 @@ def new_file(event=None):
     update_title()
 
 
+# Select all text in the file
 def select_all_text(event=None):
     textbox.tag_add("sel", "1.0", "end-1c")
     return "break"
 
 
+# Select the text in the currently selected line
 def select_current_line(event=None):
     textbox.tag_remove("sel", "1.0", "end")
     textbox.tag_add("sel", "insert linestart", "insert lineend")
     return "break"
 
 
+# Go back and forward in time to fix mistakes
 def undo(event=None):
     try:
         textbox.edit_undo()
@@ -272,6 +281,7 @@ def redo(event=None):
     return "break"
 
 
+# Makes sure you don't quite withou saving
 def on_closing(event=None):
     if textbox.edit_modified():
         result = messagebox.askyesnocancel(
@@ -290,10 +300,12 @@ def on_closing(event=None):
         root.destroy()
 
 
+# Updates the window title based on the save status of file
 def on_modified(event=None):
     update_title()
 
 
+# changes fontsize to simulate zooming in or out
 def zoom(action, event=None):
     global textbox_font
 
@@ -306,6 +318,7 @@ def zoom(action, event=None):
             textbox_font.configure(size=current_size - 1)
 
 
+# Calls the font selection menu
 def change_font(event=None):
     global textbox_font
     global root
@@ -322,10 +335,12 @@ def change_font(event=None):
     root.tk.call("tk", "fontchooser", "show")
 
 
+# Changes the font to the one chosen i nthe fint selection menu
 def font_changed(font_desc):
     actual = font.Font(font=font_desc).actual()
     textbox_font.configure(**actual)
 
 
+# Calls the main function
 if __name__ == "__main__":
     main()
