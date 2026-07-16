@@ -15,10 +15,10 @@ TEXTBOX_TEXTSELECT_FOREGROUND_COLOR = "#FFFFFF"
 TEXTBOX_TEXTSELECT_BACKGROUND_COLOR = "#5E81AC"
 TEXTBOX_CURSOR_COLOR = "#88C0D0"
 
-BUTTON_BACKGROUND_COLOR = "#2E3440"
-BUTTON_FOREGROUND_COLOR = "#ECEFF4"
-BUTTON_ACTIVE_BACKGROUND_COLOR = "#434C5E"
-BUTTON_ACTIVE_FOREGROUND_COLOR = "#FFFFFF"
+MENU_BACKGROUND_COLOR = "#1E222A"
+MENU_FOREGROUND_COLOR = "#ECEFF4"
+MENU_ACTIVE_BACKGROUND_COLOR = "#5E81AC"
+MENU_ACTIVE_FOREGROUND_COLOR = "#FFFFFF"
 
 def update_title():
     prefix = "*" if textbox.edit_modified() else ""
@@ -43,52 +43,80 @@ def main():
 
     root.geometry(f"{window_width}x{window_height}+{x}+{y}")
 
-    top_frame = tk.Frame(root, height=40, bg=FRAME_BACKGROUND_COLOR)
-    top_frame.pack(fill="x")
+    menubar = tk.Menu(
+        root,
+        bg=MENU_BACKGROUND_COLOR,
+        fg=MENU_FOREGROUND_COLOR,
+        activebackground=MENU_ACTIVE_BACKGROUND_COLOR,
+        activeforeground=MENU_ACTIVE_FOREGROUND_COLOR,
+        tearoff=0
+    )
+    root.config(menu=menubar)
 
-    create_button(top_frame, "Open", open_file).pack(side="left")
-    create_button(top_frame, "Save", save_file).pack(side="left")
-    create_button(top_frame, "New", new_file).pack(side="left")
+    file_menu = tk.Menu(
+        menubar,
+        tearoff=0,
+        bg=MENU_BACKGROUND_COLOR,
+        fg=MENU_FOREGROUND_COLOR,
+        activebackground=MENU_ACTIVE_BACKGROUND_COLOR,
+        activeforeground=MENU_ACTIVE_FOREGROUND_COLOR
+    )
 
-    textbox = tk.Text(root, 
-    wrap="word", 
-    bg=TEXTBOX_BACKGROUND_COLOR, 
-    fg=TEXTBOX_FOREGROUND_COLOR, 
-    selectbackground=TEXTBOX_TEXTSELECT_BACKGROUND_COLOR,
-    selectforeground=TEXTBOX_TEXTSELECT_FOREGROUND_COLOR,
-    insertbackground=TEXTBOX_CURSOR_COLOR,
-    undo=True, 
-    font=("TkDefaultFont", 13)
+    file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+N")
+    file_menu.add_command(label="Open...", command=open_file, accelerator="Ctrl+O")
+    file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
+    file_menu.add_separator()
+    file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+Q")
+
+    menubar.add_cascade(label="File", menu=file_menu)
+
+    edit_menu = tk.Menu(
+        menubar,
+        tearoff=0,
+        bg=MENU_BACKGROUND_COLOR,
+        fg=MENU_FOREGROUND_COLOR,
+        activebackground=MENU_ACTIVE_BACKGROUND_COLOR,
+        activeforeground=MENU_ACTIVE_FOREGROUND_COLOR
+    )
+
+    edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+Z")
+    edit_menu.add_command(label="Redo", command=redo, accelerator="Ctrl+Y")
+    edit_menu.add_separator()
+    edit_menu.add_command(label="Select All", command=select_all_text, accelerator="Ctrl+A")
+    edit_menu.add_command(label="Select Current Line", command=select_current_line, accelerator="Ctrl+L")
+
+    menubar.add_cascade(label="Edit", menu=edit_menu)
+
+    textbox = tk.Text(
+        root,
+        wrap="word",
+        bg=TEXTBOX_BACKGROUND_COLOR,
+        fg=TEXTBOX_FOREGROUND_COLOR,
+        selectbackground=TEXTBOX_TEXTSELECT_BACKGROUND_COLOR,
+        selectforeground=TEXTBOX_TEXTSELECT_FOREGROUND_COLOR,
+        insertbackground=TEXTBOX_CURSOR_COLOR,
+        undo=True,
+        font=("TkDefaultFont", 13)
     )
 
     textbox.pack(fill="both", expand=True)
     textbox.focus_set()
 
-    textbox.bind("<Control-s>", save_file) # save
-    textbox.bind("<Control-a>", select_all_text) # select all text
-    textbox.bind("<Control-l>", select_current_line) # select all text in the line the cursor is currently on
-    textbox.bind("<Control-o>", open_file) # open file
-    textbox.bind("<Control-n>", new_file) # create new file
-    textbox.bind("<Control-q>", on_closing) # close program
-    textbox.bind("<Control-z>", undo) # undo
-    textbox.bind("<Control-y>", redo) # redo
+    # Keyboard Shortcuts
+    textbox.bind("<Control-s>", save_file)
+    textbox.bind("<Control-a>", select_all_text)
+    textbox.bind("<Control-l>", select_current_line)
+    textbox.bind("<Control-o>", open_file)
+    textbox.bind("<Control-n>", new_file)
+    textbox.bind("<Control-q>", on_closing)
+    textbox.bind("<Control-z>", undo)
+    textbox.bind("<Control-y>", redo)
 
     textbox.bind("<<Modified>>", on_modified)
 
     root.protocol("WM_DELETE_WINDOW", on_closing)
 
     root.mainloop()
-
-def create_button(parent, text, command):
-    return tk.Button(
-        parent,
-        text=text,
-        command=command,
-        bg=BUTTON_BACKGROUND_COLOR,
-        fg=BUTTON_FOREGROUND_COLOR,
-        activebackground=BUTTON_ACTIVE_BACKGROUND_COLOR,
-        activeforeground=BUTTON_ACTIVE_FOREGROUND_COLOR
-    )
 
 def open_file(event=None):
     global current_file_path
