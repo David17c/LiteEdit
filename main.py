@@ -102,7 +102,6 @@ def main():
     textbox.pack(fill="both", expand=True)
     textbox.focus_set()
 
-    # Keyboard Shortcuts
     textbox.bind("<Control-s>", save_file)
     textbox.bind("<Control-a>", select_all_text)
     textbox.bind("<Control-l>", select_current_line)
