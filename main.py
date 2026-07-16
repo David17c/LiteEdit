@@ -10,17 +10,6 @@ current_file_path = ""
 textbox = None
 root = tk.Tk()
 
-TEXTBOX_BACKGROUND_COLOR = "#1B1F27"
-TEXTBOX_FOREGROUND_COLOR = "#F8FAFC"
-TEXTBOX_TEXTSELECT_FOREGROUND_COLOR = "#FFFFFF"
-TEXTBOX_TEXTSELECT_BACKGROUND_COLOR = "#5E81AC"
-TEXTBOX_CURSOR_COLOR = "#A3BE8C"
-
-MENU_BACKGROUND_COLOR = "#1B1F27"
-MENU_FOREGROUND_COLOR = "#F8FAFC"
-MENU_ACTIVE_BACKGROUND_COLOR = "#81A1C1"
-MENU_ACTIVE_FOREGROUND_COLOR = "#FFFFFF"
-
 startup_file = ""
 
 if len(sys.argv) > 1:
@@ -56,21 +45,13 @@ def main():
 
     menubar = tk.Menu(
         root,
-        bg=MENU_BACKGROUND_COLOR,
-        fg=MENU_FOREGROUND_COLOR,
-        activebackground=MENU_ACTIVE_BACKGROUND_COLOR,
-        activeforeground=MENU_ACTIVE_FOREGROUND_COLOR,
         tearoff=0
     )
     root.config(menu=menubar)
 
     file_menu = tk.Menu(
         menubar,
-        tearoff=0,
-        bg=MENU_BACKGROUND_COLOR,
-        fg=MENU_FOREGROUND_COLOR,
-        activebackground=MENU_ACTIVE_BACKGROUND_COLOR,
-        activeforeground=MENU_ACTIVE_FOREGROUND_COLOR
+        tearoff=0
     )
 
     file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+N")
@@ -85,11 +66,7 @@ def main():
 
     edit_menu = tk.Menu(
         menubar,
-        tearoff=0,
-        bg=MENU_BACKGROUND_COLOR,
-        fg=MENU_FOREGROUND_COLOR,
-        activebackground=MENU_ACTIVE_BACKGROUND_COLOR,
-        activeforeground=MENU_ACTIVE_FOREGROUND_COLOR
+        tearoff=0
     )
 
     edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+Z  ")
@@ -107,11 +84,6 @@ def main():
     textbox = tk.Text(
         root,
         wrap="none",
-        bg=TEXTBOX_BACKGROUND_COLOR,
-        fg=TEXTBOX_FOREGROUND_COLOR,
-        selectbackground=TEXTBOX_TEXTSELECT_BACKGROUND_COLOR,
-        selectforeground=TEXTBOX_TEXTSELECT_FOREGROUND_COLOR,
-        insertbackground=TEXTBOX_CURSOR_COLOR,
         undo=True,
         font=("TkDefaultFont", 13)
     )
