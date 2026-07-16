@@ -157,8 +157,12 @@ def open_file(event=None):
     if not file_path:
         return
 
-    with open(file_path, "r", encoding="utf-8") as file:
-        content = file.read()
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read()
+    except:
+        messagebox.showerror("ERROR", f"Unable to open file")
+        return
 
     textbox.delete("1.0", "end")
     textbox.insert("1.0", content)

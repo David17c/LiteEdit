@@ -14,3 +14,7 @@ Lightweight text-editor written in Python
 | CTRL + l | select current line 
 | CTRL + c | Copy selected       
 | CTRL + v | Paste               
+
+LiteEdit accepts the following commandline arguments:
+
+`liteedit <filename>` (Opens the specified file)
