@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import sys
+import os
 
 PROGRAM_NAME = "LiteEdit"
 
@@ -20,12 +22,18 @@ MENU_FOREGROUND_COLOR = "#F8FAFC"
 MENU_ACTIVE_BACKGROUND_COLOR = "#81A1C1"
 MENU_ACTIVE_FOREGROUND_COLOR = "#FFFFFF"
 
+startup_file = ""
+
+if len(sys.argv) > 1:
+    startup_file = sys.argv[1]
+
 def update_title():
     prefix = "*" if textbox.edit_modified() else ""
     root.title(f"{prefix}{current_file_path or PROGRAM_NAME}")
 
 
 def main():
+    global startup_file
     global textbox
 
     root.title(PROGRAM_NAME)
@@ -106,6 +114,9 @@ def main():
     textbox.pack(fill="both", expand=True)
     textbox.focus_set()
 
+    if startup_file and os.path.isfile(startup_file):
+        root.after(0, open_file)
+
     textbox.bind("<Control-s>", save_file)
     textbox.bind("<Control-a>", select_all_text)
     textbox.bind("<Control-l>", select_current_line)
@@ -123,6 +134,7 @@ def main():
 
 def open_file(event=None):
     global current_file_path
+    global startup_file
 
     if textbox.edit_modified():
         result = messagebox.askyesnocancel("Confirmation", "Do you want to save before continuing?")
@@ -133,10 +145,14 @@ def open_file(event=None):
         elif result is None:
             return 
 
-    file_path = filedialog.askopenfilename(
-        title="Open File",
-        filetypes=[("All files", "*.*")]
-    )
+    if startup_file != "":
+        file_path = startup_file
+        startup_file = ""
+    else:    
+        file_path = filedialog.askopenfilename(
+            title="Open File",
+            filetypes=[("All files", "*.*")]
+        )
 
     if not file_path:
         return
