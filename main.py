@@ -10,6 +10,7 @@ current_file_path = ""
 root = tk.Tk()
 textbox = None
 textbox_font = font.Font(family="TkDefaultFont", size=13)
+document_modified = False
 
 startup_file = ""
 
@@ -19,8 +20,16 @@ if len(sys.argv) > 1:
 
 # Update the title of the window based on save status
 def update_title():
-    prefix = "*" if textbox.edit_modified() else ""
+    global document_modified
+
+    prefix = "*" if document_modified else ""
     root.title(f"{prefix}{current_file_path or PROGRAM_NAME}")
+
+
+def set_modified(modified=True):
+    global document_modified
+    document_modified = modified
+    update_title()
 
 
 # Program starts here
@@ -57,7 +66,7 @@ def main():
     file_menu.add_separator()
     file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
     file_menu.add_command(
-        label="Save as", command=save_file, accelerator="Ctrl+Shift+S  "
+        label="Save as", command=save_as_file, accelerator="Ctrl+Shift+S  "
     )
     file_menu.add_separator()
     file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+Q")
@@ -129,7 +138,9 @@ def main():
     textbox.bind("<Control-Down>", lambda event: zoom("out"))
     textbox.bind("<Control-Shift-T>", change_font)
 
-    textbox.bind("<<Modified>>", on_modified)
+    textbox.bind("<KeyRelease>", lambda e: set_modified())
+    textbox.bind("<<Paste>>", lambda e: root.after_idle(set_modified))
+    textbox.bind("<<Cut>>", lambda e: root.after_idle(set_modified))
 
     root.protocol("WM_DELETE_WINDOW", on_closing)
 
@@ -140,8 +151,9 @@ def main():
 def open_file(event=None):
     global current_file_path
     global startup_file
+    global loading_file
 
-    if textbox.edit_modified():
+    if document_modified:
         result = messagebox.askyesnocancel(
             "Confirmation", "Do you want to save before continuing?"
         )
@@ -178,7 +190,8 @@ def open_file(event=None):
 
     current_file_path = file_path
     textbox.edit_reset()
-    textbox.edit_modified(False)
+    set_modified(False)
+
     update_title()
 
 
@@ -186,7 +199,7 @@ def open_file(event=None):
 def save_file(event=None):
     global current_file_path
 
-    if not textbox.edit_modified():
+    if not document_modified:
         return
 
     if not current_file_path:
@@ -202,8 +215,7 @@ def save_file(event=None):
     with open(current_file_path, "w", encoding="utf-8") as file:
         file.write(content)
 
-    textbox.edit_modified(False)
-    update_title()
+    set_modified(False)
 
 
 # Saves the current file as a new file
@@ -223,15 +235,14 @@ def save_as_file(event=None):
         file.write(content)
 
     current_file_path = new_file_path
-    textbox.edit_modified(False)
-    update_title()
+    set_modified(False)
 
 
 # Creates a new empty document
 def new_file(event=None):
     global current_file_path
 
-    if textbox.edit_modified():
+    if document_modified:
         result = messagebox.askyesnocancel(
             "Confirmation", "Do you want to save before continuing?"
         )
@@ -246,9 +257,7 @@ def new_file(event=None):
 
     textbox.delete("1.0", "end")
     textbox.edit_reset()
-    textbox.edit_modified(False)
-
-    update_title()
+    set_modified(False)
 
 
 # Select all text in the file
@@ -268,14 +277,16 @@ def select_current_line(event=None):
 def undo(event=None):
     try:
         textbox.edit_undo()
+        set_modified()
     except tk.TclError:
-        pass  # Nothing to undo
+        pass
     return "break"
 
 
 def redo(event=None):
     try:
         textbox.edit_redo()
+        set_modified()
     except tk.TclError:
         pass
     return "break"
@@ -283,7 +294,7 @@ def redo(event=None):
 
 # Makes sure you don't quite withou saving
 def on_closing(event=None):
-    if textbox.edit_modified():
+    if document_modified:
         result = messagebox.askyesnocancel(
             "Confirmation", "Do you want to save before closing?"
         )
@@ -298,11 +309,6 @@ def on_closing(event=None):
 
     else:
         root.destroy()
-
-
-# Updates the window title based on the save status of file
-def on_modified(event=None):
-    update_title()
 
 
 # changes fontsize to simulate zooming in or out
