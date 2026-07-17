@@ -2,14 +2,17 @@ import sys
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox, font
+from platformdirs import user_config_dir
 from pathlib import Path
+import sqlite3
 
 PROGRAM_NAME = "LiteEdit"
 
 current_file_path = ""
 root = tk.Tk()
 textbox = None
-textbox_font = font.Font(family="TkDefaultFont", size=13)
+textbox_font = font.Font(family="Consolas", size=13)
+DB_PATH = Path(user_config_dir("LiteEdit")) / "settings.db"
 document_modified = False
 
 startup_file = ""
@@ -61,44 +64,44 @@ def main():
 
     file_menu = tk.Menu(menubar, tearoff=0)
 
-    file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+N")
-    file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
+    file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+n")
+    file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+o")
     file_menu.add_separator()
-    file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
+    file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+s")
     file_menu.add_command(
         label="Save as", command=save_as_file, accelerator="Ctrl+Shift+S  "
     )
     file_menu.add_separator()
-    file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+Q")
+    file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+q")
 
     menubar.add_cascade(label="File", menu=file_menu)
 
     edit_menu = tk.Menu(menubar, tearoff=0)
 
-    edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+Z  ")
-    edit_menu.add_command(label="Redo", command=redo, accelerator="Ctrl+Y")
+    edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+z  ")
+    edit_menu.add_command(label="Redo", command=redo, accelerator="Ctrl+y")
     edit_menu.add_separator()
     edit_menu.add_command(
         label="Cut",
         command=lambda: textbox.event_generate("<<Cut>>"),
-        accelerator="Ctrl+X",
+        accelerator="Ctrl+x",
     )
     edit_menu.add_command(
         label="Copy",
         command=lambda: textbox.event_generate("<<Copy>>"),
-        accelerator="Ctrl+C",
+        accelerator="Ctrl+c",
     )
     edit_menu.add_command(
         label="Paste",
         command=lambda: textbox.event_generate("<<Paste>>"),
-        accelerator="Ctrl+V",
+        accelerator="Ctrl+v",
     )
     edit_menu.add_separator()
     edit_menu.add_command(
-        label="Select All", command=select_all_text, accelerator="Ctrl+A"
+        label="Select All", command=select_all_text, accelerator="Ctrl+a"
     )
     edit_menu.add_command(
-        label="Select Current Line", command=select_current_line, accelerator="Ctrl+L"
+        label="Select Current Line", command=select_current_line, accelerator="Ctrl+l"
     )
 
     menubar.add_cascade(label="Edit", menu=edit_menu)
@@ -143,6 +146,16 @@ def main():
     textbox.bind("<<Cut>>", lambda e: root.after_idle(set_modified))
 
     root.protocol("WM_DELETE_WINDOW", on_closing)
+
+    create_config_file()
+
+    settings = load_settings()
+
+    settings = load_settings()
+    textbox_font.configure(
+        family=settings["font"],
+        size=settings["font_size"],
+    )
 
     root.mainloop()
 
@@ -292,7 +305,7 @@ def redo(event=None):
     return "break"
 
 
-# Makes sure you don't quite withou saving
+# Makes sure you don't quit without saving
 def on_closing(event=None):
     if document_modified:
         result = messagebox.askyesnocancel(
@@ -319,9 +332,11 @@ def zoom(action, event=None):
     if action == "in":
         if current_size < 250:
             textbox_font.configure(size=current_size + 1)
+            save_settings(textbox_font.cget("family"), current_size + 1)
     elif action == "out":
         if current_size > 1:
             textbox_font.configure(size=current_size - 1)
+            save_settings(textbox_font.cget("family"), current_size + 1)
 
 
 # Calls the font selection menu
@@ -341,10 +356,62 @@ def change_font(event=None):
     root.tk.call("tk", "fontchooser", "show")
 
 
-# Changes the font to the one chosen i nthe fint selection menu
+# Changes the font to the one chosen in the font selection menu
 def font_changed(font_desc):
     actual = font.Font(font=font_desc).actual()
     textbox_font.configure(**actual)
+
+    save_settings(
+        textbox_font.cget("family"),
+        textbox_font.cget("size"),
+    )
+
+
+def create_config_file():
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS settings (
+                id INTEGER PRIMARY KEY,
+                font TEXT,
+                font_size INTEGER
+            )
+        """)
+
+        # Create a single settings row if it doesn't exist
+        cursor.execute("""
+            INSERT OR IGNORE INTO settings (id, font, font_size)
+            VALUES (1, 'Consolas', 13)
+        """)
+
+
+def load_settings():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT font, font_size
+            FROM settings
+            WHERE id = 1
+        """)
+        row = cursor.fetchone()
+
+    return {"font": row[0], "font_size": row[1]}
+
+
+def save_settings(font, font_size):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            UPDATE settings
+            SET font = ?, font_size = ?
+            WHERE id = 1
+        """,
+            (font, font_size),
+        )
 
 
 # Calls the main function
