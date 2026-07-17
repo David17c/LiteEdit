@@ -11,7 +11,7 @@ PROGRAM_NAME = "LiteEdit"
 current_file_path = ""
 root = tk.Tk()
 textbox = None
-textbox_font = font.Font(family="Consolas", size=13)
+textbox_font = font.Font(family="Arial", size=14)
 DB_PATH = Path(user_config_dir("LiteEdit")) / "settings.db"
 document_modified = False
 
@@ -64,44 +64,48 @@ def main():
 
     file_menu = tk.Menu(menubar, tearoff=0)
 
-    file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+n")
-    file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+o")
+    file_menu.add_command(label="New", command=new_file, accelerator="Ctrl+N")
+    file_menu.add_command(label="Open", command=open_file, accelerator="Ctrl+O")
     file_menu.add_separator()
-    file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+s")
+    file_menu.add_command(label="Save", command=save_file, accelerator="Ctrl+S")
     file_menu.add_command(
-        label="Save as", command=save_as_file, accelerator="Ctrl+Shift+S  "
+        label="Save As", command=save_as_file, accelerator="Ctrl+Shift+S"
     )
     file_menu.add_separator()
-    file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+q")
+    file_menu.add_command(label="Exit", command=on_closing, accelerator="Ctrl+Q")
 
     menubar.add_cascade(label="File", menu=file_menu)
 
     edit_menu = tk.Menu(menubar, tearoff=0)
 
-    edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+z  ")
-    edit_menu.add_command(label="Redo", command=redo, accelerator="Ctrl+y")
+    edit_menu.add_command(label="Undo", command=undo, accelerator="Ctrl+Z")
+    edit_menu.add_command(label="Redo", command=redo, accelerator="Ctrl+Y")
     edit_menu.add_separator()
     edit_menu.add_command(
         label="Cut",
         command=lambda: textbox.event_generate("<<Cut>>"),
-        accelerator="Ctrl+x",
+        accelerator="Ctrl+X",
     )
     edit_menu.add_command(
         label="Copy",
         command=lambda: textbox.event_generate("<<Copy>>"),
-        accelerator="Ctrl+c",
+        accelerator="Ctrl+C",
     )
     edit_menu.add_command(
         label="Paste",
         command=lambda: textbox.event_generate("<<Paste>>"),
-        accelerator="Ctrl+v",
+        accelerator="Ctrl+V",
     )
     edit_menu.add_separator()
     edit_menu.add_command(
-        label="Select All", command=select_all_text, accelerator="Ctrl+a"
+        label="Select All",
+        command=select_all_text,
+        accelerator="Ctrl+A",
     )
     edit_menu.add_command(
-        label="Select Current Line", command=select_current_line, accelerator="Ctrl+l"
+        label="Select Current Line",
+        command=select_current_line,
+        accelerator="Ctrl+L",
     )
 
     menubar.add_cascade(label="Edit", menu=edit_menu)
@@ -109,19 +113,45 @@ def main():
     view_menu = tk.Menu(menubar, tearoff=0)
 
     view_menu.add_command(
-        label="Zoom in", command=lambda: zoom("in"), accelerator="Ctrl+Up"
+        label="Zoom In",
+        command=lambda: zoom("in"),
+        accelerator="Ctrl+Up",
     )
     view_menu.add_command(
-        label="Zoom out", command=lambda: zoom("out"), accelerator="Ctrl+Down  "
+        label="Zoom Out",
+        command=lambda: zoom("out"),
+        accelerator="Ctrl+Down",
     )
     view_menu.add_command(
-        label="font", command=change_font, accelerator="Ctrl+Shift+T  "
+        label="Font",
+        command=change_font,
+        accelerator="Ctrl+Shift+T",
     )
 
     menubar.add_cascade(label="View", menu=view_menu)
-    textbox = tk.Text(root, wrap="none", undo=True, font=textbox_font)
 
-    textbox.pack(fill="both", expand=True)
+    frame = tk.Frame(root)
+    frame.pack(fill="both", expand=True)
+
+    v_scroll = tk.Scrollbar(frame, orient="vertical")
+    v_scroll.pack(side="right", fill="y")
+
+    h_scroll = tk.Scrollbar(frame, orient="horizontal")
+    h_scroll.pack(side="bottom", fill="x")
+
+    textbox = tk.Text(
+        frame,
+        wrap="none",
+        undo=True,
+        font=textbox_font,
+        yscrollcommand=v_scroll.set,
+        xscrollcommand=h_scroll.set,
+    )
+    textbox.pack(side="left", fill="both", expand=True)
+
+    v_scroll.config(command=textbox.yview)
+    h_scroll.config(command=textbox.xview)
+
     textbox.focus_set()
 
     if startup_file and os.path.isfile(startup_file):
@@ -148,8 +178,6 @@ def main():
     root.protocol("WM_DELETE_WINDOW", on_closing)
 
     create_config_file()
-
-    settings = load_settings()
 
     settings = load_settings()
     textbox_font.configure(
@@ -367,6 +395,7 @@ def font_changed(font_desc):
     )
 
 
+# Creates the config file
 def create_config_file():
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
@@ -384,10 +413,11 @@ def create_config_file():
         # Create a single settings row if it doesn't exist
         cursor.execute("""
             INSERT OR IGNORE INTO settings (id, font, font_size)
-            VALUES (1, 'Consolas', 13)
+            VALUES (1, 'Arial', 14)
         """)
 
 
+# Reads the config file
 def load_settings():
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
@@ -401,6 +431,7 @@ def load_settings():
     return {"font": row[0], "font_size": row[1]}
 
 
+# Saves settings to the config file
 def save_settings(font, font_size):
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
