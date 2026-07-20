@@ -1,6 +1,6 @@
 # LiteEdit
 
-Lightweight text-editor written in Python
+Lightweight text-editor written in Python.
 
 | Keybind  | Action              
 |----------|---------------------
@@ -19,10 +19,14 @@ Lightweight text-editor written in Python
 | CTRL + Down | Zoom out
 | CTRL + Shift + T | Change font
 
-LiteEdit accepts the following commandline arguments:
+LiteEdit accepts a filename as a command line argument.
 
-`liteedit <filename>` (Opens the specified file)
+`liteedit <filename>`
 
-### Why did i make this?
+## Why did i make this?
 
 Because its fun to use something you made yourself.
+
+## Support
+
+LiteEdit is supported and both Linux and Windows
